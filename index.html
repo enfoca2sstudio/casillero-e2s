@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enfoca2S Studios — Casillero de Clientes</title>
+    <link href="img/fav-icon.png" rel="icon" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-mark">
+          <img src="img/logo-header.png" alt="logo" />
+        </span>
+        <span class="logo-text">Enfoca2S<br /><em>Studios</em></span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button
+          class="nav-btn active"
+          data-section="dashboard"
+          onclick="showSection('dashboard')"
+        >
+          <i class="fa-solid fa-briefcase"></i> Dashboard
+        </button>
+        <button
+          class="nav-btn"
+          data-section="clientes"
+          onclick="showSection('clientes')"
+        >
+          <i class="fa-solid fa-briefcase"></i> Clientes
+        </button>
+        <button
+          class="nav-btn"
+          data-section="informes"
+          onclick="showSection('informes')"
+        >
+          <i class="fa-solid fa-file-lines"></i> Informes
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <span>v1.0.0 — 2025</span>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="top-bar">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="top-bar-title" id="topBarTitle">Dashboard</div>
+        <button class="btn-primary" onclick="openModal('modalNuevoCliente')">
+          <i class="fa-solid fa-plus"></i> Nuevo cliente
+        </button>
+      </header>
+
+      <!-- SECTION: DASHBOARD -->
+      <section class="section active" id="section-dashboard">
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <i class="fa-solid fa-users stat-icon"></i>
+            <div>
+              <div class="stat-number" id="statTotal">0</div>
+              <div class="stat-label">Clientes totales</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-file-circle-check stat-icon accent"></i>
+            <div>
+              <div class="stat-number" id="statInformes">0</div>
+              <div class="stat-label">Informes generados</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-palette stat-icon gold"></i>
+            <div>
+              <div class="stat-number" id="statPerfiles">0</div>
+              <div class="stat-label">Perfiles completos</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-section">
+          <h2 class="section-title">Clientes recientes</h2>
+          <div class="client-grid" id="recentGrid"></div>
+        </div>
+      </section>
+
+      <!-- SECTION: CLIENTES -->
+      <section class="section" id="section-clientes">
+        <div class="section-header">
+          <h2 class="section-title">Casillero de Clientes</h2>
+          <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              placeholder="Buscar cliente..."
+              oninput="filtrarClientes(this.value)"
+            />
+          </div>
+        </div>
+        <div class="client-grid" id="clientGrid"></div>
+        <div class="empty-state" id="emptyClientes">
+          <i class="fa-solid fa-folder-open"></i>
+          <p>Aún no hay clientes. ¡Agrega el primero!</p>
+        </div>
+      </section>
+
+      <!-- SECTION: INFORMES -->
+      <section class="section" id="section-informes">
+        <div class="section-header">
+          <h2 class="section-title">Generador de Informes</h2>
+        </div>
+
+        <div class="informe-builder">
+          <div class="form-group">
+            <label>Seleccionar cliente</label>
+            <select id="informeCliente">
+              <option value="">— Elegir cliente —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Título del informe</label>
+            <input
+              type="text"
+              id="informeTitulo"
+              placeholder="Ej: Entrega de identidad visual — Junio 2025"
+            />
+          </div>
+          <div class="form-group">
+            <label>Contenido del informe</label>
+            <textarea
+              id="informeContenido"
+              rows="8"
+              placeholder="Describe el trabajo entregado, avances, observaciones..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Número de WhatsApp del cliente (con código de país)</label>
+            <input type="text" id="informeWA" placeholder="Ej: 573001234567" />
+          </div>
+          <div class="informe-actions">
+            <button class="btn-secondary" onclick="previewInforme()">
+              <i class="fa-solid fa-eye"></i> Vista previa
+            </button>
+            <button class="btn-wa" onclick="enviarWhatsApp()">
+              <i class="fa-brands fa-whatsapp"></i> Enviar por WhatsApp
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="informe-preview-box"
+          id="informePreview"
+          style="display: none"
+        >
+          <div class="preview-header">Vista previa del mensaje</div>
+          <div class="preview-body" id="previewContent"></div>
+        </div>
+
+        <div class="historial-section">
+          <h3 class="section-title small">Historial de informes</h3>
+          <div id="historialInformes" class="historial-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL: NUEVO CLIENTE -->
+    <div class="modal-overlay" id="modalNuevoCliente">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Nuevo Cliente</h3>
+          <button class="modal-close" onclick="closeModal('modalNuevoCliente')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('tabGeneral')">
+              General
+            </button>
+            <button class="tab" onclick="showTab('tabVisual')">Visual</button>
+            <button class="tab" onclick="showTab('tabTipografia')">
+              Tipografía
+            </button>
+            <button class="tab" onclick="showTab('tabNotas')">Notas</button>
+          </div>
+
+          <!-- TAB GENERAL -->
+          <div class="tab-content active" id="tabGeneral">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nombre del cliente / marca *</label>
+                <input type="text" id="cNombre" placeholder="Ej: Studio Noir" />
+              </div>
+              <div class="form-group">
+                <label>Sector / industria</label>
+                <input
+                  type="text"
+                  id="cSector"
+                  placeholder="Ej: Moda, Tech, Gastronomía..."
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Contacto</label>
+                <input
+                  type="text"
+                  id="cContacto"
+                  placeholder="Nombre del encargado"
+                />
+              </div>
+              <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="text" id="cWhatsApp" placeholder="573001234567" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="cEmail" placeholder="hola@cliente.com" />
+            </div>
+            <div class="form-group">
+              <label>Descripción de la marca</label>
+              <textarea
+                id="cDescripcion"
+                rows="3"
+                placeholder="¿A qué se dedica? ¿Cuál es su propósito?"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Público objetivo</label>
+              <textarea
+                id="cPublico"
+                rows="2"
+                placeholder="¿A quién le habla la marca?"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- TAB VISUAL -->
+          <div class="tab-content" id="tabVisual">
+            <div class="form-group">
+              <label>Paleta de colores</label>
+              <div class="color-palette-builder" id="paletteBuilder">
+                <div class="color-slots" id="colorSlots"></div>
+                <button class="btn-add-color" onclick="addColorSlot()">
+                  <i class="fa-solid fa-plus"></i> Agregar color
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Estilo visual</label>
+              <div class="tag-selector" id="estiloVisual">
+                <span class="tag" onclick="toggleTag(this)">Minimalista</span>
+                <span class="tag" onclick="toggleTag(this)">Luxury</span>
+                <span class="tag" onclick="toggleTag(this)">Orgánico</span>
+                <span class="tag" onclick="toggleTag(this)">Retro</span>
+                <span class="tag" onclick="toggleTag(this)">Futurista</span>
+                <span class="tag" onclick="toggleTag(this)">Urbano</span>
+                <span class="tag" onclick="toggleTag(this)">Playful</span>
+                <span class="tag" onclick="toggleTag(this)">Editorial</span>
+                <span class="tag" onclick="toggleTag(this)">Corporativo</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Logotipo (URL de imagen o descripción)</label>
+              <input
+                type="text"
+                id="cLogo"
+                placeholder="https://... o descripción del logo"
+              />
+            </div>
+            <div class="form-group">
+              <label>Observaciones visuales</label>
+              <textarea
+                id="cVisualNotes"
+                rows="3"
+                placeholder="Referencias, moodboard, restricciones visuales..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- TAB TIPOGRAFÍA -->
+          <div class="tab-content" id="tabTipografia">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fuente principal (display)</label>
+                <input
+                  type="text"
+                  id="cFont1"
+                  placeholder="Ej: Playfair Display"
+                />
+              </div>
+              <div class="form-group">
+                <label>Fuente secundaria (cuerpo)</label>
+                <input type="text" id="cFont2" placeholder="Ej: DM Sans" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Fuente de acento / decorativa</label>
+                <input
+                  type="text"
+                  id="cFont3"
+                  placeholder="Ej: Cormorant Italic"
+                />
+              </div>
+              <div class="form-group">
+                <label>Escala tipográfica base</label>
+                <input
+                  type="text"
+                  id="cFontScale"
+                  placeholder="Ej: 16px / 1.5 line-height"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tono de comunicación</label>
+              <div class="tag-selector" id="tonoCom">
+                <span class="tag" onclick="toggleTag(this)">Formal</span>
+                <span class="tag" onclick="toggleTag(this)">Cercano</span>
+                <span class="tag" onclick="toggleTag(this)">Técnico</span>
+                <span class="tag" onclick="toggleTag(this)">Inspirador</span>
+                <span class="tag" onclick="toggleTag(this)">Juvenil</span>
+                <span class="tag" onclick="toggleTag(this)">Neutro</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Notas tipográficas adicionales</label>
+              <textarea
+                id="cFontNotes"
+                rows="3"
+                placeholder="Usos específicos, tamaños para titulares, restricciones..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- TAB NOTAS -->
+          <div class="tab-content" id="tabNotas">
+            <div class="form-group">
+              <label>Estado del proyecto</label>
+              <select id="cEstado">
+                <option value="activo">🟢 Activo</option>
+                <option value="pausa">🟡 En pausa</option>
+                <option value="cerrado">🔴 Cerrado</option>
+                <option value="prospecto">🔵 Prospecto</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Archivos / Links del proyecto</label>
+              <textarea
+                id="cLinks"
+                rows="3"
+                placeholder="Drive, Figma, Behance, Dropbox..."
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label>Notas internas</label>
+              <textarea
+                id="cNotas"
+                rows="5"
+                placeholder="Todo lo que necesitas recordar sobre este cliente..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn-secondary"
+            onclick="closeModal('modalNuevoCliente')"
+          >
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="guardarCliente()">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar cliente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: VER CLIENTE -->
+    <div class="modal-overlay wide" id="modalVerCliente">
+      <div class="modal modal-wide">
+        <div class="modal-header">
+          <h3 id="modalClienteNombre">—</h3>
+          <button class="modal-close" onclick="closeModal('modalVerCliente')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" id="modalClienteBody"></div>
+        <div class="modal-footer">
+          <button class="btn-danger" onclick="eliminarClienteActual()">
+            <i class="fa-solid fa-trash"></i> Eliminar
+          </button>
+          <button class="btn-edit" onclick="editarClienteActual()">
+            <i class="fa-solid fa-file-pen"></i> Editar cliente
+          </button>
+          <button class="btn-wa" onclick="irAInformeCliente()">
+            <i class="fa-brands fa-whatsapp"></i> Crear informe
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
